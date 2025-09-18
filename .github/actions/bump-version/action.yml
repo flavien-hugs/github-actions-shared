@@ -2,7 +2,7 @@ name: "Bump version"
 description: "Run semantic-release to bump version and expose new version"
 
 inputs:
-  github_token:
+  token:
     description: "Github token to push tags"
     required: true
 
