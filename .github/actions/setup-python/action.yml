@@ -5,17 +5,22 @@ runs:
     using: "composite"
     steps:
         - name: "Install pipx"
+          shell: bash
           run: |
             python --version
+            python -m pip install --upgrade pip
             python -m pip install pipx
         
         - name: "Ensure pipx path"
+          shell: bash
           run: python -m pipx ensurepath
         
         - name: "Install Poetry"
+          shell: bash
           run: python -m pipx install poetry
         
         - name: "Upgrade pip & setuptools"
+          shell: bash
           run: |
             export PATH=$PATH:/root/.local/bin
             poetry env use python
