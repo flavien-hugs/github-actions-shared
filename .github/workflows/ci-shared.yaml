@@ -73,5 +73,3 @@ jobs:
           username: ${{ inputs.username }}
           password: ${{ inputs.password }}
           version: ${{ needs.bump-version.outputs.version }}
-          ref_name: ${{ steps.ref.outputs.ref_name }}
-          ref_type: ${{ steps.ref.outputs.ref_type }}
