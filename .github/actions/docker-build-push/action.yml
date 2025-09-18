@@ -14,16 +14,22 @@ inputs:
   version:
     description: "Version to use (from bump-version output or tag)"
     required: true
-  ref_name:
-    description: "Git ref name (branch or tag)"
-    required: true
-  ref_type:
-    description: "Git ref type (branch or tag)"
-    required: true
 
 runs:
   using: "composite"
   steps:
+    - name: "Set Git ref info"
+      id: ref
+      shell: bash
+      run: |
+        if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "ref_type=tag" >> $GITHUB_OUTPUT
+            echo "ref_name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        else
+            echo "ref_type=branch" >> $GITHUB_OUTPUT
+            echo "ref_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+        fi
+    
     - name: "Login to Docker registry"
       shell: bash
       run: |
@@ -34,8 +40,8 @@ runs:
       shell: bash
       run: |
         VERSION="${{ inputs.version }}"
-        REF_NAME="${{ inputs.ref_name }}"
-        REF_TYPE="${{ inputs.ref_type }}"
+        REF_NAME="${{ steps.ref.outputs.ref_name }}"
+        REF_TYPE="${{ steps.ref.outputs.ref_type }}"
         
         if [[ "$REF_TYPE" == "tag" ]]; then
             CLEAN_VERSION=${VERSION#v}
@@ -48,6 +54,9 @@ runs:
             echo "Also tagging 'latest'"
             docker tag ${{ inputs.registry }}:$CLEAN_VERSION ${{ inputs.registry }}:latest
             docker push ${{ inputs.registry }}:latest
+            
+            echo "image=${{ inputs.registry }}:$CLEAN_VERSION" >> $GITHUB_OUTPUT
+            echo "tags=$CLEAN_VERSION,latest" >> $GITHUB_OUTPUT
             exit 0
         fi
         
@@ -77,4 +86,6 @@ runs:
             docker push ${{ inputs.registry }}:$tag
         done
         
+        echo "image=${{ inputs.registry }}:${DOCKER_TAGS[0]}" >> $GITHUB_OUTPUT
+        echo "tags=${DOCKER_TAGS[*]}" >> $GITHUB_OUTPUT
         echo "Build and push completed successfully"
