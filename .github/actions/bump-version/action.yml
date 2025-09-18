@@ -1,5 +1,11 @@
 name: "Bump version"
 description: "Run semantic-release to bump version and expose new version"
+
+inputs:
+  github_token:
+    description: "Github token to push tags"
+    required: true
+
 outputs:
   version:
     description: "The new version after bump"
@@ -17,7 +23,7 @@ runs:
       id: semantic-release
       uses: python-semantic-release/python-semantic-release@master
       with:
-        github_token: ${{ secrets.GH_SUBMODULE_TOKEN }}
+        github_token: ${{ inputs.github_token }}
 
     - name: "Extract new version"
       id: extract-version
