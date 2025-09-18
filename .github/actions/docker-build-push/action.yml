@@ -3,12 +3,22 @@ description: "Build and push Docker image with proper tagging"
 
 inputs:
   registry:
+    description: "Docker registry (ex: ghcr.io/org/repo)"
     required: true
   username:
+    description: "Registry username"
     required: true
   password:
+    description: "Registry password or token"
     required: true
   version:
+    description: "Version to use (from bump-version output or tag)"
+    required: true
+  ref_name:
+    description: "Git ref name (branch or tag)"
+    required: true
+  ref_type:
+    description: "Git ref type (branch or tag)"
     required: true
 
 runs:
@@ -17,13 +27,54 @@ runs:
     - name: "Login to Docker registry"
       shell: bash
       run: |
-        echo "${{ inputs.password }}" | docker login ${{ inputs.registry }} -u ${{ inputs.username }} --password-stdin
+        echo "${{ inputs.password }}" | \
+          docker login ${{ inputs.registry }} -u ${{ inputs.username }} --password-stdin
 
-    - name: "Build and push Docker image"
+    - name: "Determine image tag(s) and build"
       shell: bash
       run: |
-        CLEAN_VERSION=${{ inputs.version#v }}
-        echo "Building image for version: $CLEAN_VERSION"
-
-        docker build -t ${{ inputs.registry }}:$CLEAN_VERSION .
-        docker push ${{ inputs.registry }}:$CLEAN_VERSION
+        VERSION="${{ inputs.version }}"
+        REF_NAME="${{ inputs.ref_name }}"
+        REF_TYPE="${{ inputs.ref_type }}"
+        
+        if [[ "$REF_TYPE" == "tag" ]]; then
+            CLEAN_VERSION=${VERSION#v}
+            CLEAN_VERSION=${CLEAN_VERSION/_RC/-rc}
+            echo "Detected TAG push → version: $CLEAN_VERSION"
+            
+            docker build -t ${{ inputs.registry }}:$CLEAN_VERSION .
+            docker push ${{ inputs.registry }}:$CLEAN_VERSION
+            
+            echo "Also tagging 'latest'"
+            docker tag ${{ inputs.registry }}:$CLEAN_VERSION ${{ inputs.registry }}:latest
+            docker push ${{ inputs.registry }}:latest
+            exit 0
+        fi
+        
+        CLEAN_VERSION=${VERSION#v}
+        echo "Using version: $CLEAN_VERSION"
+        echo "Branch name: $REF_NAME"
+        
+        if [[ "$REF_NAME" == "main" || "$REF_NAME" == "master" ]]; then
+            DOCKER_TAGS=("latest")
+        elif [[ "$REF_NAME" == "preprod" ]]; then
+            DOCKER_TAGS=("preprod")
+        elif [[ "$REF_NAME" == "develop" ]]; then
+            DOCKER_TAGS=("dev")
+        else
+            echo "No valid tag found for branch $REF_NAME, exiting..."
+            exit 1
+        fi
+        
+        echo "Building Docker image with tags: ${DOCKER_TAGS[@]}"
+        docker build -t ${{ inputs.registry }}:${DOCKER_TAGS[0]} .
+        
+        for tag in "${DOCKER_TAGS[@]:1}"; do
+            docker tag ${{ inputs.registry }}:${DOCKER_TAGS[0]} ${{ inputs.registry }}:$tag
+        done
+        
+        for tag in "${DOCKER_TAGS[@]}"; do
+            docker push ${{ inputs.registry }}:$tag
+        done
+        
+        echo "Build and push completed successfully"
