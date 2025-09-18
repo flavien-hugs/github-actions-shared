@@ -1,0 +1,29 @@
+name: "Bump version"
+description: "Run semantic-release to bump version and expose new version"
+outputs:
+  version:
+    description: "The new version after bump"
+    value: ${{ steps.extract-version.outputs.version }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Checkout repository"
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: "Bump version using semantic-release"
+      id: semantic-release
+      uses: python-semantic-release/python-semantic-release@master
+      with:
+        github_token: ${{ secrets.GH_SUBMODULE_TOKEN }}
+
+    - name: "Extract new version"
+      id: extract-version
+      shell: bash
+      run: |
+        echo "Get the latest tag created by semantic-release ..."
+        VERSION=$(git describe --tags --abbrev=0)
+        echo "Extracted version: $VERSION"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT

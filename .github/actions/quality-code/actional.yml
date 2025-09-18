@@ -1,0 +1,21 @@
+name: "Run code quality checks"
+description: "Run Black, Flake8 and Bandit"
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Install quality tools"
+      shell: bash
+      run: poetry add black flake8 bandit
+
+    - name: "Run black"
+      shell: bash
+      run: poetry run black . --check
+
+    - name: "Run flake8"
+      shell: bash
+      run: poetry run flake8 .
+
+    - name: "Run bandit"
+      shell: bash
+      run: poetry run bandit .

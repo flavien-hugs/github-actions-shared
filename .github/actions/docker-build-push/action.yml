@@ -1,0 +1,29 @@
+name: "Build and push Docker image"
+description: "Build and push Docker image with proper tagging"
+
+inputs:
+  registry:
+    required: true
+  username:
+    required: true
+  password:
+    required: true
+  version:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Login to Docker registry"
+      shell: bash
+      run: |
+        echo "${{ inputs.password }}" | docker login ${{ inputs.registry }} -u ${{ inputs.username }} --password-stdin
+
+    - name: "Build and push Docker image"
+      shell: bash
+      run: |
+        CLEAN_VERSION=${{ inputs.version#v }}
+        echo "Building image for version: $CLEAN_VERSION"
+
+        docker build -t ${{ inputs.registry }}:$CLEAN_VERSION .
+        docker push ${{ inputs.registry }}:$CLEAN_VERSION
