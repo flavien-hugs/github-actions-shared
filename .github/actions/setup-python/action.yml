@@ -1,0 +1,23 @@
+name: 'Setup Python with Poetry'
+description: "Install pipx, poetry and upgrade pip/setuptools"
+
+runs:
+    using: "composite"
+    steps:
+        - name: "Install pipx"
+          run: |
+            python --version
+            python -m pip install pipx
+        
+        - name: "Ensure pipx path"
+          run: python -m pipx ensurepath
+        
+        - name: "Install Poetry"
+          run: python -m pipx install poetry
+        
+        - name: "Upgrade pip & setuptools"
+          run: |
+            export PATH=$PATH:/root/.local/bin
+            poetry env use python
+            poetry run pip install --upgrade pip setuptools
+            poetry install --no-root

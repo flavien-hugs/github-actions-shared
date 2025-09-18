@@ -1,0 +1,18 @@
+name: "Cache Poetry and Pip"
+description: "Setup cache for Poetry and Pip dependencies"
+
+inputs:
+    cache-key:
+        description: 'Key for cache'
+        required: true
+
+runs:
+    using: 'composite'
+    steps:
+        - name: 'Cache poetry and pip'
+          uses: actions/cache@v3
+          with:
+            path: |
+              ~/.cache/pip
+              ~/.cache/pypoetry
+            key: ${{ inputs.cache-key }}
