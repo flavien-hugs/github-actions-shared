@@ -2,18 +2,13 @@ name: "Shared CI workflow"
 
 on:
   workflow_call:
-    inputs:
-      registry:
-        required: true
-        type: string
-      username:
-        required: true
-        type: string
-      password:
-        required: true
-        type: string
-
     secrets:
+        GHRC_REGISTRY_ADDR:
+            required: true
+        GHRC_USERNAME:
+            required: true
+        GHRC_PASSWORD:
+            required: true
         GH_SUBMODULE_TOKEN:
             required: true
 
@@ -64,7 +59,7 @@ jobs:
       
       - uses: ./.github/actions/docker-build-push@main
         with:
-          registry: ${{ inputs.registry }}
-          username: ${{ inputs.username }}
-          password: ${{ inputs.password }}
+          registry: ${{ secrets.GHRC_REGISTRY_ADDR }}
+          username: ${{ secrets.GHRC_USERNAME }}
+          password: ${{ secrets.GHRC_PASSWORD }}
           version: ${{ needs.bump-version.outputs.version }}
