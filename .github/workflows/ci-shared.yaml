@@ -2,15 +2,19 @@ name: "Shared CI workflow"
 
 on:
   workflow_call:
-    secrets:
-        GHRC_REGISTRY_ADDR:
-            required: true
-        GHRC_USERNAME:
-            required: true
-        GHRC_PASSWORD:
-            required: true
-        GH_SUBMODULE_TOKEN:
-            required: true
+    inputs:
+      registry:
+        required: true
+        type: string
+      username:
+        required: true
+        type: string
+      password:
+        required: true
+        type: string
+      github_token:
+        required: true
+        type: string
 
 jobs:
   check-quality-code:
@@ -43,7 +47,7 @@ jobs:
     steps:
       - uses: ./.github/actions/bump-version
         with:
-          token: ${{ secrets.GH_SUBMODULE_TOKEN }}
+          token: ${{ inputs.github_token }}
 
   build-push-image:
     needs: [bump-version]
@@ -62,7 +66,7 @@ jobs:
       
       - uses: ./.github/actions/docker-build-push
         with:
-          registry: ${{ secrets.GHRC_REGISTRY_ADDR }}
-          username: ${{ secrets.GHRC_USERNAME }}
-          password: ${{ secrets.GHRC_PASSWORD }}
+          registry: ${{ inputs.registry }}
+          username: ${{ inputs.username }}
+          password: ${{ inputs.password }}
           version: ${{ needs.bump-version.outputs.version }}
