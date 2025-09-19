@@ -17,9 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - uses: ./.github/actions/cache-package
         with:
           cache-key: ${{ runner.os }}-pip-poetry-${{ hashFiles('**/poetry.lock') }}
+      
       - uses: ./.github/actions/setup-python
       - uses: ./.github/actions/quality-code
 
@@ -28,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - uses: ./.github/actions/cache-package
         with:
           cache-key: ${{ runner.os }}-pip-poetry-${{ hashFiles('**/poetry.lock') }}
