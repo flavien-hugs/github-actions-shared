@@ -30,7 +30,8 @@ runs:
       id: ref
       shell: bash
       run: |
-        if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+        GITHUB_REF="${{ github.ref }}"
+        if [[ "$GITHUB_REF" == refs/tags/* ]]; then
             echo "ref_type=tag" >> $GITHUB_OUTPUT
             echo "ref_name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
         else
