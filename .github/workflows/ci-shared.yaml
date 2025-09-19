@@ -30,6 +30,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ github.GH_SUBMODULE_TOKEN }}
+          fetch-depth: 0
 
       - uses: flavien-hugs/github-actions-shared/.github/actions/cache-package@main
         with:
