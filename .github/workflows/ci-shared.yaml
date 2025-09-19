@@ -3,20 +3,13 @@ name: "Shared CI workflow"
 on:
   workflow_call:
     inputs:
-      github_token:
-        required: true
-        type: string
-      registry:
-        required: true
-        type: string
-      username:
-        required: true
-        type: string
-      password:
+      version:
         required: true
         type: string
     secrets:
       GH_SUBMODULE_TOKEN:
+        required: true
+      GHRC_REGISTRY_ADDR:
         required: true
       GHRC_PASSWORD:
         required: true
@@ -58,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set ref info
+      - name: "Set ref info"
         id: ref
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
@@ -67,9 +60,10 @@ jobs:
           else
             echo "ref_type=branch" >> $GITHUB_OUTPUT
             echo "ref_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+      
       - uses: ./.github/actions/docker-build-push@main
         with:
-          registry: ${{ inputs.registry }}
-          username: ${{ inputs.username }}
-          password: ${{ inputs.password }}
+          registry: ${{ secrets.GHRC_REGISTRY_ADDR }}
+          username: ${{ secrets.GHRC_USERNAME }}
+          password: ${{ secrets.GHRC_PASSWORD }}
           version: ${{ needs.bump-version.outputs.version }}
