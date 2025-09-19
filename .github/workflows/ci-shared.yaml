@@ -17,28 +17,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/cache-package@main
+      - uses: ./.github/actions/cache-package
         with:
           cache-key: ${{ runner.os }}-pip-poetry-${{ hashFiles('**/poetry.lock') }}
-      - uses: ./.github/actions/setup-python@main
-      - uses: ./.github/actions/quality-code@main
+      - uses: ./.github/actions/setup-python
+      - uses: ./.github/actions/quality-code
 
   run-tests:
     needs: [check-quality-code]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/cache-package@main
+      - uses: ./.github/actions/cache-package
         with:
           cache-key: ${{ runner.os }}-pip-poetry-${{ hashFiles('**/poetry.lock') }}
-      - uses: ./.github/actions/setup-python@main
-      - uses: ./.github/actions/run-tests@main
+      - uses: ./.github/actions/setup-python
+      - uses: ./.github/actions/run-tests
 
   bump-version:
     needs: [run-tests]
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/bump-version@main
+      - uses: ./.github/actions/bump-version
         with:
           token: ${{ secrets.GH_SUBMODULE_TOKEN }}
 
@@ -57,7 +57,7 @@ jobs:
             echo "ref_type=branch" >> $GITHUB_OUTPUT
             echo "ref_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
       
-      - uses: ./.github/actions/docker-build-push@main
+      - uses: ./.github/actions/docker-build-push
         with:
           registry: ${{ secrets.GHRC_REGISTRY_ADDR }}
           username: ${{ secrets.GHRC_USERNAME }}
