@@ -68,5 +68,5 @@ jobs:
         with:
           registry: ${{ inputs.registry }}
           username: ${{ inputs.username }}
-          password: ${{ secrets.GH_SUBMODULE_TOKEN }}
+          password: ${{ inputs.password }}
           version: ${{ needs.bump-version.outputs.version }}

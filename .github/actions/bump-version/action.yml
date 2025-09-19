@@ -23,7 +23,7 @@ runs:
       id: semantic-release
       uses: python-semantic-release/python-semantic-release@master
       with:
-        github_token: ${{ inputs.github_token }}
+        github_token: ${{ inputs.token }}
 
     - name: "Extract new version"
       id: extract-version
