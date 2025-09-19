@@ -18,12 +18,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: ./.github/actions/cache-package
+      - uses: flavien-hugs/github-actions-shared/.github/actions/cache-package@main
         with:
           cache-key: ${{ runner.os }}-pip-poetry-${{ hashFiles('**/poetry.lock') }}
       
-      - uses: ./.github/actions/setup-python
-      - uses: ./.github/actions/quality-code
+      - uses: flavien-hugs/github-actions-shared/.github/actions/setup-python@main
+      - uses: flavien-hugs/github-actions-shared/.github/actions/quality-code@main
 
   run-tests:
     needs: [check-quality-code]
@@ -31,17 +31,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: ./.github/actions/cache-package
+      - uses: flavien-hugs/github-actions-shared/.github/actions/cache-package@main
         with:
           cache-key: ${{ runner.os }}-pip-poetry-${{ hashFiles('**/poetry.lock') }}
-      - uses: ./.github/actions/setup-python
-      - uses: ./.github/actions/run-tests
+
+      - uses: flavien-hugs/github-actions-shared/.github/actions/setup-python@main
+      - uses: flavien-hugs/github-actions-shared/.github/actions/run-tests@main
 
   bump-version:
     needs: [run-tests]
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/bump-version
+      - uses: flavien-hugs/github-actions-shared/.github/actions/bump-version@main
         with:
           token: ${{ secrets.GH_SUBMODULE_TOKEN }}
 
@@ -60,7 +61,7 @@ jobs:
             echo "ref_type=branch" >> $GITHUB_OUTPUT
             echo "ref_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
       
-      - uses: ./.github/actions/docker-build-push
+      - uses: flavien-hugs/github-actions-shared/.github/actions/docker-build-push@main
         with:
           registry: ${{ secrets.GHRC_REGISTRY_ADDR }}
           username: ${{ secrets.GHRC_USERNAME }}
