@@ -41,8 +41,12 @@ runs:
     - name: "Login to Docker registry"
       shell: bash
       run: |
+        REGISTRY_HOST="${{ inputs.registry }}"
+        if [[ "$REGISTRY_HOST" == *"/"* ]]; then
+          REGISTRY_HOST="${REGISTRY_HOST%%/*}"
+        fi
         echo "${{ inputs.password }}" | \
-          docker login ${{ inputs.registry%%/* }} -u ${{ inputs.username }} --password-stdin
+          docker login "$REGISTRY_HOST" -u ${{ inputs.username }} --password-stdin
 
     - name: "Determine image tag(s) and build"
       id: meta
