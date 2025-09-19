@@ -15,9 +15,10 @@ on:
       version:
         required: true
         type: string
-      github_token:
-        required: true
-        type: string
+
+    secrets:
+        GH_SUBMODULE_TOKEN:
+            required: true
 
 jobs:
   check-quality-code:
@@ -47,7 +48,7 @@ jobs:
     steps:
       - uses: ./.github/actions/bump-version@main
         with:
-          token: ${{ inputs.github_token }}
+          token: ${{ secrets.GH_SUBMODULE_TOKEN }}
 
   build-push-image:
     needs: [bump-version]
