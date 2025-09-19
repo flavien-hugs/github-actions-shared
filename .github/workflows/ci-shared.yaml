@@ -12,9 +12,6 @@ on:
       password:
         required: true
         type: string
-      version:
-        required: true
-        type: string
 
     secrets:
         GH_SUBMODULE_TOKEN:
