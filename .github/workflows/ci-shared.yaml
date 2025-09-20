@@ -54,15 +54,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: "Set ref info"
-        id: ref
-        run: |
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            echo "ref_type=tag" >> $GITHUB_OUTPUT
-            echo "ref_name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-          else
-            echo "ref_type=branch" >> $GITHUB_OUTPUT
-            echo "ref_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+        with:
+          token: ${{ secrets.GH_SUBMODULE_TOKEN }}
       
       - uses: flavien-hugs/github-actions-shared/.github/actions/docker-build-push@main
         with:
