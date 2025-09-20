@@ -55,6 +55,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          submodules: true
           token: ${{ secrets.GH_SUBMODULE_TOKEN }}
       
       - uses: flavien-hugs/github-actions-shared/.github/actions/docker-build-push@main
