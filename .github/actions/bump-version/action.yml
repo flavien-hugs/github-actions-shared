@@ -17,7 +17,9 @@ runs:
     - name: "Checkout repository"
       uses: actions/checkout@v4
       with:
+        ref: ${{ github.ref }}
         fetch-depth: 0
+        persist-credentials: 'true'
 
     - name: "Bump version using semantic-release"
       id: semantic-release
@@ -33,3 +35,13 @@ runs:
         VERSION=$(git describe --tags --abbrev=0)
         echo "Extracted version: $VERSION"
         echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: "Commit new version tag"
+      if: steps.extract-version.outputs.version != ''
+      shell: bash
+      run: |
+        VERSION="${{ steps.extract-version.outputs.version }}"
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git commit --allow-empty -m "chore(release): $VERSION"
+        git push origin HEAD:${GITHUB_REF_NAME}
