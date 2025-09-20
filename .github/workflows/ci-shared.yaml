@@ -44,6 +44,9 @@ jobs:
   bump-version:
     needs: [run-tests]
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
     steps:
       - uses: flavien-hugs/github-actions-shared/.github/actions/bump-version@main
         with:
