@@ -25,11 +25,13 @@ runs:
       id: bump
       shell: bash
       run: |
+        export PATH=$PATH:/root/.local/bin
         poetry run semantic-release version --changelog
     
     - name: "Extract new version"
       id: extract-version
       shell: bash
       run: |
+        export PATH=$PATH:/root/.local/bin
         VERSION=$(poetry run semantic-release version --print)
         echo "version=$VERSION" >> $GITHUB_OUTPUT

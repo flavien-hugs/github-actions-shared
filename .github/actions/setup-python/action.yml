@@ -4,22 +4,24 @@ description: "Install pipx, poetry and upgrade pip/setuptools"
 runs:
     using: "composite"
     steps:
-        - name: "Install pipx"
+        - name: "Upgrade pip and install pipx"
           shell: bash
           run: |
             python --version
             python -m pip install --upgrade pip
             python -m pip install pipx
         
-        - name: "Ensure pipx path"
+        - name: "Ensure pipx path and install poetry via poetry"
           shell: bash
-          run: python -m pipx ensurepath
+          run: |
+            python -m pipx ensurepath
+            python -m pipx install poetry
         
-        - name: "Install Poetry"
+        - name: "Add Poetry to PATH globally"
           shell: bash
-          run: python -m pipx install poetry
-        
-        - name: "Upgrade pip & setuptools"
+          run: echo "PATH=$PATH:/root/.local/bin" >> $GITHUB_ENV
+          
+        - name: "Upgrade pip & setuptools in Poetry env"
           shell: bash
           run: |
             export PATH=$PATH:/root/.local/bin
