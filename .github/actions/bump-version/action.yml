@@ -29,6 +29,12 @@ runs:
         git fetch origin $TARGET_BRANCH
         git checkout $TARGET_BRANCH
     
+    - name: "Install dependencies"
+      shell: bash
+      run: |
+        poetry install --only main --no-interaction --no-ansi
+        poetry run pip install python-semantic-release
+
     - name: "Bump version & generate changelog"
       id: bump
       shell: bash
@@ -36,7 +42,6 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
-        export PATH=$PATH:/root/.local/bin
         poetry run semantic-release version --changelog
     
     - name: "Extract new version"
@@ -45,7 +50,6 @@ runs:
       env:
           GITHUB_TOKEN: ${{ inputs.token }}
       run: |
-          export PATH=$PATH:/root/.local/bin
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             VERSION="${GITHUB_REF#refs/tags/}"
           elif [[ "${GITHUB_REF}" == "refs/heads/main" || "${GITHUB_REF}" == "refs/heads/develop" ]]; then

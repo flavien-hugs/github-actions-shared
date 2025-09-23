@@ -53,10 +53,15 @@ runs:
       id: meta
       shell: bash
       run: |
-        VERSION="${{ inputs.version }}"
         REF_NAME="${{ steps.ref.outputs.ref_name }}"
         REF_TYPE="${{ steps.ref.outputs.ref_type }}"
         IMAGE="${{ inputs.registry }}"
+        
+        if [[ "$REF_TYPE" == "tag" ]]; then
+            VERSION="$REF_NAME"
+        else
+            VERSION="${{ inputs.version }}"
+        fi
         
         TAGS=()
         
