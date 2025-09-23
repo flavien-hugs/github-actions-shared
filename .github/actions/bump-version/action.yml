@@ -21,6 +21,14 @@ runs:
         fetch-depth: 0
         persist-credentials: 'true'
     
+    - name: "Checkout target branch"
+      shell: bash
+      run: |
+        TARGET_BRANCH="${GITHUB_BASE_REF:-${GITHUB_REF#refs/heads/}}"
+        echo "Checking out branch: $TARGET_BRANCH"
+        git fetch origin $TARGET_BRANCH
+        git checkout $TARGET_BRANCH
+    
     - name: "Bump version & generate changelog"
       id: bump
       shell: bash
