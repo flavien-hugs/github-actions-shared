@@ -45,6 +45,7 @@ jobs:
     needs: [run-tests]
     runs-on: ubuntu-latest
     steps:
+      - uses: flavien-hugs/github-actions-shared/.github/actions/setup-python@main
       - uses: flavien-hugs/github-actions-shared/.github/actions/bump-version@main
         with:
           token: ${{ secrets.GH_SUBMODULE_TOKEN }}
