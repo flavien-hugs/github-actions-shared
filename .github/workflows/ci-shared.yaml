@@ -49,6 +49,13 @@ jobs:
       - uses: flavien-hugs/github-actions-shared/.github/actions/bump-version@main
         with:
           token: ${{ secrets.GH_SUBMODULE_TOKEN }}
+  
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: flavien-hugs/github-actions-shared/.github/actions/release@main
+        with:
+          github_token: ${{ secrets.GH_SUBMODULE_TOKEN }}
 
   build-push-image:
     needs: [bump-version]

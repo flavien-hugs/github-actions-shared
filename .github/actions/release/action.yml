@@ -1,0 +1,33 @@
+name: "Release"
+description: "Run semantic-release to create a new release on push to main"
+
+inputs:
+  github_token:
+    description: "GitHub token to publish the release"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Checkout repository"
+      uses: actions/checkout@v4
+
+    - name: "Setup Python"
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+
+    - name: "Install semantic-release"
+      shell: bash
+      run: pip install --upgrade pip
+
+    - name: "Install semantic-release"
+      shell: bash
+      run: pip install python-semantic-release
+
+    - name: "Run semantic-release"
+      shell: bash
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+      run: semantic-release publish
