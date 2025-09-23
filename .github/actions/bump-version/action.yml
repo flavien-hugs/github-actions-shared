@@ -20,9 +20,16 @@ runs:
         ref: ${{ github.ref }}
         fetch-depth: 0
         persist-credentials: 'true'
-
-    - name: "Bump version using semantic-release"
-      id: semantic-release
-      uses: python-semantic-release/python-semantic-release@master
-      with:
-        github_token: ${{ inputs.token }}
+    
+    - name: "Bump version & generate changelog"
+      id: bump
+      shell: bash
+      run: |
+        poetry run semantic-release version --changelog
+    
+    - name: "Extract new version"
+      id: extract-version
+      shell: bash
+      run: |
+        VERSION=$(poetry run semantic-release version --print)
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
