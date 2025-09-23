@@ -65,6 +65,10 @@ runs:
             CLEAN_VERSION=${CLEAN_VERSION/_RC/-rc}
             TAGS+=("$CLEAN_VERSION" "latest")
             echo "Detected TAG push → version: $CLEAN_VERSION"
+        elif [[ "$REF_NAME" == refs/pull/*/merge ]]; then
+            SHORT_SHA=$(git rev-parse --short HEAD)
+            TAGS+=("$SHORT_SHA")
+            echo "Pull request detected → tagging image with SHA: $SHORT_SHA"
         else
             CLEAN_VERSION=${VERSION#v}
             case "$REF_NAME" in
