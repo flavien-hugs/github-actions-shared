@@ -46,7 +46,9 @@ runs:
           GITHUB_TOKEN: ${{ inputs.token }}
       run: |
           export PATH=$PATH:/root/.local/bin
-          if [[ "${GITHUB_REF}" == "refs/heads/main" || "${GITHUB_REF}" == "refs/heads/develop" ]]; then
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/}"
+          elif [[ "${GITHUB_REF}" == "refs/heads/main" || "${GITHUB_REF}" == "refs/heads/develop" ]]; then
             VERSION=$(poetry run semantic-release version --print)
           else
             VERSION=$(git rev-parse --short HEAD)
