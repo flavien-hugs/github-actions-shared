@@ -4,6 +4,9 @@ description: "Install pipx, poetry and upgrade pip/setuptools"
 runs:
     using: "composite"
     steps:
+        - name: "Checkout repository"
+          uses: actions/checkout@v4
+        
         - name: "Upgrade pip and install pipx"
           shell: bash
           run: |
