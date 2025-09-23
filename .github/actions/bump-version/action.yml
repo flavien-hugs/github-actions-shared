@@ -32,6 +32,7 @@ runs:
     - name: "Bump version & generate changelog"
       id: bump
       shell: bash
+      if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' }}
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
@@ -44,6 +45,10 @@ runs:
       env:
           GITHUB_TOKEN: ${{ inputs.token }}
       run: |
-        export PATH=$PATH:/root/.local/bin
-        VERSION=$(poetry run semantic-release version --print)
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
+          export PATH=$PATH:/root/.local/bin
+          if [[ "${GITHUB_REF}" == "refs/heads/main" || "${GITHUB_REF}" == "refs/heads/develop" ]]; then
+            VERSION=$(poetry run semantic-release version --print)
+          else
+            VERSION=$(git rev-parse --short HEAD)
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
