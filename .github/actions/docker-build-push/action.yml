@@ -61,21 +61,12 @@ runs:
         TAGS=()
         
         if [[ "$REF_TYPE" == "tag" ]]; then
-            CLEAN_VERSION=${VERSION#v}
-            CLEAN_VERSION=${CLEAN_VERSION/_RC/-rc}
-            TAGS+=("$CLEAN_VERSION" "latest")
-            echo "Detected TAG push → version: $CLEAN_VERSION"
-        elif [[ "$REF_NAME" == refs/pull/*/merge ]]; then
-            SHORT_SHA=$(git rev-parse --short HEAD)
-            TAGS+=("$SHORT_SHA")
-            echo "Pull request detected → tagging image with SHA: $SHORT_SHA"
+            TAGS+=("$VERSION")
         else
-            CLEAN_VERSION=${VERSION#v}
             case "$REF_NAME" in
-              main|master) TAGS+=("latest");;
-              preprod)     TAGS+=("preprod");;
-              develop)     TAGS+=("dev");;
-              *) echo "No valid tag for branch $REF_NAME"; exit 1;;
+                main) TAGS+=("latest");;
+                develop) TAGS+=("dev");;
+                *) echo "No Docker tag configured for branch $REF_NAME"; exit 0;;
             esac
         fi
         
