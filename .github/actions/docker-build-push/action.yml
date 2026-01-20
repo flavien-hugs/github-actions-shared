@@ -67,12 +67,16 @@ runs:
         
         if [[ "$REF_TYPE" == "tag" ]]; then
             TAGS+=("$VERSION")
+        elif [[ "$REF_NAME" == "main" ]]; then
+            TAGS+=("latest")
+        elif [[ "$REF_NAME" == "develop" ]]; then
+            TAGS+=("dev")
+        elif [[ "$REF_NAME" =~ ^rc/([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            VERSION="${BASH_REMATCH[1]}"
+            TAGS+=("${VERSION}_RC")
         else
-            case "$REF_NAME" in
-                main) TAGS+=("latest");;
-                develop) TAGS+=("dev");;
-                *) echo "No Docker tag configured for branch $REF_NAME"; exit 0;;
-            esac
+            echo "Branch $REF_NAME not eligible for Docker build"
+            exit 0
         fi
         
         echo "Building Docker image with tags: ${TAGS[*]}"
