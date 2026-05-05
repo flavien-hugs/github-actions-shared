@@ -43,6 +43,7 @@ jobs:
   
   bump-version:
     needs: [run-tests]
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: flavien-hugs/github-actions-shared/.github/actions/setup-python@main
@@ -60,6 +61,7 @@ jobs:
 
   build-push-image:
     needs: [release]
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
